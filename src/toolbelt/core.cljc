@@ -166,3 +166,9 @@
        :cljs (.parseFloat (.toFixed x precision)))
     #?(:clj  (Math/round x)
        :cljs (.round js/Math x))))
+
+
+(defn throwable? [x]
+  (instance? #?(:clj java.lang.Throwable
+                :cljs js/Error)
+             x))

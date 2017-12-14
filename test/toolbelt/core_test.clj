@@ -1,6 +1,6 @@
 (ns toolbelt.core-test
   (:require [clojure.test :refer :all]
-            [toolbelt-core.core :refer :all]))
+            [toolbelt.core :refer :all]))
 
 (deftest transform-when-key-exists-test
   (let [m1 {:a 1 :b 2}
@@ -118,3 +118,7 @@
   (is (= 2 (round 1.5)))
   (is (= 1.1 (round 1.1 1)))
   (is (= 1.17 (round 1.167 2))))
+
+
+(deftest throwable-test
+  (is (throwable? (ex-info "Test" {}))))
