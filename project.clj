@@ -1,4 +1,4 @@
-(defproject starcity/toolbelt-core "0.1.0-SNAPSHOT"
+(defproject starcity/toolbelt-core "0.1.0"
   :description "Generic utility functions for Clojure/Script."
   :url "https://github.com/starcity-properties/toolbelt-core"
   :license {:name "Eclipse Public License"
