@@ -33,8 +33,7 @@
      (map? s)    (throw (ex-info "map arguments require keys" {:map s}))
      (string? s) (when-not (string/blank? s)
                    (let [s (re-find #"-?\d+" s)]
-                     #?(:clj  (Long. s)
-                        :cljs (js/parseInt s))))
+                     (js/parseInt s)))
      :otherwise  (throw (ex-info (str "cannot convert argument of type " (type s))
                                  {:argument s}))))
   ([m & ks]
@@ -161,14 +160,9 @@
 (defn round
   [x & [precision]]
   (if (some? precision)
-    #?(:clj  (let [scale (Math/pow 10 precision)]
-               (-> x (* scale) Math/round (/ scale)))
-       :cljs (.parseFloat (.toFixed x precision)))
-    #?(:clj  (Math/round x)
-       :cljs (.round js/Math x))))
+    (.parseFloat (.toFixed x precision))
+    (.round js/Math x)))
 
 
 (defn throwable? [x]
-  (instance? #?(:clj java.lang.Throwable
-                :cljs js/Error)
-             x))
+  (instance? js/Error x))
