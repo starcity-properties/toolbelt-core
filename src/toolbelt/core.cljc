@@ -1,6 +1,7 @@
 (ns toolbelt.core
   (:require [clojure.string :as string]))
 
+
 (defn transform-when-key-exists
   "(transform-when-key-exists
      {:a 1
@@ -131,8 +132,6 @@
         :otherwise (recur (first xs) (rest xs))))))
 
 
-
-
 (defn strip-namespaces
   "Remove all namespaces from keyword keys."
   [m]
@@ -160,6 +159,7 @@
       (do (swap! s conj id)
           x))))
 
+
 #?(:clj
    (defn round
      [x & [precision]]
@@ -175,6 +175,7 @@
        (.parseFloat (.toFixed x precision))
        (.round js/Math x))))
 
+
 #?(:clj
    (defn throwable? [x]
      (instance? java.lang.Throwable x))
@@ -182,3 +183,12 @@
    :cljs
    (defn throwable? [x]
      (instance? js/Error x)))
+
+
+(defn all-some?
+  "Given seq as xseq returns true if all its items are not nils, otherwise false"
+  [xseq]
+  (if (some? (seq xseq)) (every? some? xseq) false))
+
+
+(def not-empty? (complement empty?))

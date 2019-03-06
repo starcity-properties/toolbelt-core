@@ -1,6 +1,8 @@
 (ns toolbelt.core-test
   (:require [clojure.test :refer :all]
-            [toolbelt.core :refer :all]))
+            [toolbelt.core :refer :all]
+            [toolbelt.macros :refer [is-not]]))
+
 
 (deftest transform-when-key-exists-test
   (let [m1 {:a 1 :b 2}
@@ -122,3 +124,22 @@
 
 (deftest throwable-test
   (is (throwable? (ex-info "Test" {}))))
+
+
+(deftest all-some?-test
+  (is (all-some? [1 2 3 4]))
+  (is (all-some? [1 [1] [nil]]))
+  (is (all-some? #{1 2 [nil]}))
+  (is-not (all-some? [1 2 3 nil]))
+  (is-not (all-some? '(nil)))
+  (is-not (all-some? #{1 nil 2})))
+
+
+(deftest not-empty?-test
+  (is (not-empty? [1 2 3 4]))
+  (is (not-empty? [1 [1] [nil]]))
+  (is (not-empty? [nil]))
+  (is (not-empty? #{nil}))
+  (is-not (not-empty? []))
+  (is-not (not-empty? (list)))
+  (is-not (not-empty? #{})))
