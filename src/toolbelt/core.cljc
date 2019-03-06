@@ -30,12 +30,13 @@
   ([s]
    (cond
      (number? s) s
-     (map? s)    (throw (ex-info "map arguments require keys" {:map s}))
+     (map? s) (throw (ex-info "map arguments require keys" {:map s}))
      (string? s) (when-not (string/blank? s)
                    (let [s (re-find #"-?\d+" s)]
-                     (Long. s)))
-     :otherwise  (throw (ex-info (str "cannot convert argument of type " (type s))
-                                 {:argument s}))))
+                     #?(:clj  (Long. s)
+                        :cljs (js/parseInt s))))
+     :otherwise (throw (ex-info (str "cannot convert argument of type " (type s))
+                                {:argument s}))))
   ([m & ks]
    (reduce
     (fn [m k]
@@ -125,9 +126,11 @@
     (loop [x  (first coll)
            xs (rest coll)]
       (cond
-        (pred x)    x
+        (pred x) x
         (empty? xs) nil
-        :otherwise  (recur (first xs) (rest xs))))))
+        :otherwise (recur (first xs) (rest xs))))))
+
+
 
 
 (defn strip-namespaces
@@ -151,20 +154,31 @@
   elements of xs return the same value under f, the first is returned"
   [f xs]
   (let [s (atom #{})]
-    (for [x     xs
-          :let  [id (f x)]
+    (for [x xs
+          :let [id (f x)]
           :when (not (contains? @s id))]
       (do (swap! s conj id)
           x))))
 
+#?(:clj
+   (defn round
+     [x & [precision]]
+     (if (some? precision)
+       (let [scale (Math/pow 10 precision)]
+         (-> x (* scale) Math/round (/ scale)))
+       (Math/round x)))
 
-(defn round
-  [x & [precision]]
-  (if (some? precision)
-    (let [scale (Math/pow 10 precision)]
-      (-> x (* scale) Math/round (/ scale)))
-    (Math/round x)))
+   :cljs
+   (defn round
+     [x & [precision]]
+     (if (some? precision)
+       (.parseFloat (.toFixed x precision))
+       (.round js/Math x))))
 
+#?(:clj
+   (defn throwable? [x]
+     (instance? java.lang.Throwable x))
 
-(defn throwable? [x]
-  (instance? java.lang.Throwable x))
+   :cljs
+   (defn throwable? [x]
+     (instance? js/Error x)))
