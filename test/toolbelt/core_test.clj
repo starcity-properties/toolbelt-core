@@ -132,7 +132,8 @@
   (is (all-some? #{1 2 [nil]}))
   (is-not (all-some? [1 2 3 nil]))
   (is-not (all-some? '(nil)))
-  (is-not (all-some? #{1 nil 2})))
+  (is-not (all-some? #{1 nil 2}))
+  (is-not (all-some? [])))
 
 
 (deftest not-empty?-test

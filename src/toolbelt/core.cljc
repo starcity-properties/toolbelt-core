@@ -31,12 +31,12 @@
   ([s]
    (cond
      (number? s) s
-     (map? s) (throw (ex-info "map arguments require keys" {:map s}))
+     (map? s)    (throw (ex-info "map arguments require keys" {:map s}))
      (string? s) (when-not (string/blank? s)
                    (let [s (re-find #"-?\d+" s)]
                      #?(:clj  (Long. s)
                         :cljs (js/parseInt s))))
-     :otherwise (throw (ex-info (str "cannot convert argument of type " (type s))
+     :otherwise  (throw (ex-info (str "cannot convert argument of type " (type s))
                                 {:argument s}))))
   ([m & ks]
    (reduce
@@ -127,9 +127,9 @@
     (loop [x  (first coll)
            xs (rest coll)]
       (cond
-        (pred x) x
+        (pred x)    x
         (empty? xs) nil
-        :otherwise (recur (first xs) (rest xs))))))
+        :otherwise  (recur (first xs) (rest xs))))))
 
 
 (defn strip-namespaces
