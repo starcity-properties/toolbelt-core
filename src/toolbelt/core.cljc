@@ -1,6 +1,7 @@
 (ns toolbelt.core
   (:require [clojure.string :as string]))
 
+
 (defn transform-when-key-exists
   "(transform-when-key-exists
      {:a 1
@@ -33,9 +34,10 @@
      (map? s)    (throw (ex-info "map arguments require keys" {:map s}))
      (string? s) (when-not (string/blank? s)
                    (let [s (re-find #"-?\d+" s)]
-                     (Long. s)))
+                     #?(:clj  (Long. s)
+                        :cljs (js/parseInt s))))
      :otherwise  (throw (ex-info (str "cannot convert argument of type " (type s))
-                                 {:argument s}))))
+                                {:argument s}))))
   ([m & ks]
    (reduce
     (fn [m k]
@@ -151,20 +153,42 @@
   elements of xs return the same value under f, the first is returned"
   [f xs]
   (let [s (atom #{})]
-    (for [x     xs
+    (for [x xs
           :let  [id (f x)]
           :when (not (contains? @s id))]
       (do (swap! s conj id)
           x))))
 
 
-(defn round
-  [x & [precision]]
-  (if (some? precision)
-    (let [scale (Math/pow 10 precision)]
-      (-> x (* scale) Math/round (/ scale)))
-    (Math/round x)))
+#?(:clj
+   (defn round
+     [x & [precision]]
+     (if (some? precision)
+       (let [scale (Math/pow 10 precision)]
+         (-> x (* scale) Math/round (/ scale)))
+       (Math/round x)))
+
+   :cljs
+   (defn round
+     [x & [precision]]
+     (if (some? precision)
+       (.parseFloat (.toFixed x precision))
+       (.round js/Math x))))
 
 
-(defn throwable? [x]
-  (instance? java.lang.Throwable x))
+#?(:clj
+   (defn throwable? [x]
+     (instance? java.lang.Throwable x))
+
+   :cljs
+   (defn throwable? [x]
+     (instance? js/Error x)))
+
+
+(defn all-some?
+  "Given seq as xseq returns true if all its items are not nils, otherwise false"
+  [xseq]
+  (if (some? (seq xseq)) (every? some? xseq) false))
+
+
+(def not-empty? (complement empty?))
