@@ -154,7 +154,7 @@
   [f xs]
   (let [s (atom #{})]
     (for [x xs
-          :let [id (f x)]
+          :let  [id (f x)]
           :when (not (contains? @s id))]
       (do (swap! s conj id)
           x))))
